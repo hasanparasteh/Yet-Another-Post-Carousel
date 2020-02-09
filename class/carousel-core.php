@@ -1,9 +1,13 @@
 <?php
+namespace Carousel;
+use Carousel\CarouselUtils;
+
 class CarouselPostLoop
 {
     public function __construct()
     {
         $this->number = 3;
+        $this->utils = new CarouselUtils();
         add_shortcode('latestPostCarousel', array($this, 'shortcode_latest_posts'));
     }
 
@@ -19,7 +23,7 @@ class CarouselPostLoop
             'post_status' => 'publish',
             'suppress_filters' => true,
         );
-        $query = new WP_Query($args);
+        $query = new \WP_Query($args);
         if ($query->have_posts()) {
             while ($query->have_posts()): $query->the_post();
                 array_push($recentPosts, get_the_ID());
@@ -38,11 +42,19 @@ class CarouselPostLoop
 
             if ($postinfo->post_status == 'publish') {
                 echo '<div class="item post-carousel">';
+                echo get_the_post_thumbnail($item);
+                echo "<div class='carousel-meta'>";
+                echo "<div><i class='fas fa-clock'></i> " . $this->utils->timeago($postinfo->post_date) . "</div>";
+                echo "<div><i class='fas fa-user'></i> " . get_the_author_meta($field = "display_name", $user_id = $postinfo->post_author) . "</div>";
+                echo "<div><i class='fas fa-folder'></i> " . $this->utils->show_cats_by_id($item) . "</div>";
+                echo "</div>";
+                echo "<div class='carousel-content'>";
                 echo "<h3><a href=\"" . get_bloginfo('url') . "/" . $postinfo->post_name . "\">" . $postinfo->post_title . "</a></h3>";
-                echo "<div>" . $postinfo->post_date . "<br/>" . get_the_author_meta($field = "display_name", $user_id = $postinfo->post_author) . "</div>";
-                echo '</div>';
+                echo "<p>" . $this->utils->make_excerpt($postinfo->post_content, 90) . "</p>";
+                echo "<div class='carousel-read-more'><a href='" . $postinfo->post_name . "'>Read More</a></div>";
+                echo "</div>";
+                echo "</div>";
             }
-
         endforeach;
         echo "</div>";
     }
@@ -50,27 +62,5 @@ class CarouselPostLoop
     public function shortcode_latest_posts()
     {
         return $this->show_latest_posts($this->number);
-    }
-
-    public function timeago($ptime)
-    {
-        $ptime = strtotime($ptime);
-        $etime = time() - $ptime;
-        if ($etime < 1) {
-            return 'just now';
-        }
-
-        $interval = array(12 * 30 * 24 * 60 * 60 => 'years ago ('
-            . date('Y-m-d', $ptime) . ')', 30 * 24 * 60 * 60 => 'months ago ('
-            . date('m-d', $ptime) . ')', 7 * 24 * 60 * 60 => 'weeks ago ('
-            . date('m-d', $ptime) . ')', 24 * 60 * 60 => 'days ago', 60 * 60 => 'hours ago', 60 => 'minutes ago', 1 => 'seconds ago');
-
-        foreach ($interval as $secs => $str) {
-            $d = $etime / $secs;
-            if ($d >= 1) {
-                $r = round($d);
-                return $r . $str;
-            }
-        }
     }
 }

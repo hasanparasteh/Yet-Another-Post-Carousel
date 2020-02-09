@@ -1,4 +1,6 @@
 <?php
+namespace Carousel;
+
 class CarouselSettings
 {
     public function __construct()

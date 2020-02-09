@@ -16,16 +16,14 @@
  */
 ?>
 <?php
+namespace Carousel;
+
 require_once plugin_dir_path(__FILE__) . 'class/class-tgm-plugin-activation.php';
 
-require plugin_dir_path(__FILE__) . 'class/carousel-core.php';
+require plugin_dir_path(__FILE__) . 'class/carousel-utils.php';
 require plugin_dir_path(__FILE__) . 'class/carousel-settings.php';
+require plugin_dir_path(__FILE__) . 'class/carousel-core.php';
 
-if (class_exists('CarouselSettings')) {
-    new CarouselSettings;
-    new AddCarousel;
-}
+new CarouselSettings();
 
-if (class_exists('CarouselPostLoop')) {
-    new CarouselPostLoop;
-}
+new CarouselPostLoop();
