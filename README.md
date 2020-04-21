@@ -5,7 +5,7 @@ It's just a normal post carousel that works fine...! Just drop shortcode `[lates
 ## Todo
 
 - ~~make an easy to use shortcode~~
-- make shortcode dynamic and accepts args
+- ~~make shortcode dynamic and accepts args~~
 - create settings page
   - add new carousel template
   - genrate id to use on shortcodes
