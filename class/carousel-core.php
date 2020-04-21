@@ -6,16 +6,15 @@ class CarouselPostLoop
 {
     public function __construct()
     {
-        $this->number = 3;
         $this->utils = new CarouselUtils();
-        add_shortcode('latestPostCarousel', array($this, 'shortcode_latest_posts'));
+        $this->init_carousel_shortcode();
     }
 
-    public function get_latest_posts()
+    public function get_latest_posts($postcount)
     {
         $recentPosts = [];
         $args = array(
-            'posts_per_page' => $this->number,
+            'posts_per_page' => (int) $postcount,
             'offset' => 0,
             'orderby' => 'date',
             'order' => 'DESC',
@@ -34,10 +33,13 @@ class CarouselPostLoop
         return $recentPosts;
     }
 
-    public function show_latest_posts()
+    public function show_latest_posts($atts = [])
     {
+        // normalize attribute keys, lowercase
+        $atts = array_change_key_case((array)$atts, CASE_LOWER);
+
         echo "<div class=\"owl-carousel owl-theme\">";
-        foreach ($this->get_latest_posts($posts = $this->number) as $item):
+        foreach ($this->get_latest_posts($atts['postcount']) as $item):
             $postinfo = get_post((int) $item);
 
             if ($postinfo->post_status == 'publish') {
@@ -59,8 +61,8 @@ class CarouselPostLoop
         echo "</div>";
     }
 
-    public function shortcode_latest_posts()
+    public function init_carousel_shortcode()
     {
-        return $this->show_latest_posts($this->number);
+        add_shortcode('latestPostCarousel', array($this, 'show_latest_posts'));
     }
 }
